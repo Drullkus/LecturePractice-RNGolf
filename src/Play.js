@@ -55,9 +55,13 @@ class Play extends Phaser.Scene {
 
         // add pointer input
         this.input.on('pointerdown', (pointer) => {
-            let shotDirection = pointer.y <= this.ball.y ? 1 : -1;
-            this.ball.body.setVelocityX(Phaser.Math.Between(-this.SHOT_VELOCITY_X, this.SHOT_VELOCITY_X));
-            this.ball.body.setVelocityY(Phaser.Math.Between(this.SHOT_VELOCITY_Y_MIN, this.SHOT_VELOCITY_Y_MAX) * shotDirection);
+            const shootDeltaX = this.ball.x - pointer.x;
+            const shootDeltaY = this.ball.y - pointer.y;
+            const shootDirection = new Phaser.Math.Vector2(shootDeltaX, shootDeltaY).normalize();
+
+            this.ball.body.setVelocityX(shootDirection.x * this.SHOT_VELOCITY_X);
+            // Keep RNG element by still randomizing instead of deferring to precise vector maths, funny moral defect in mechanics
+            this.ball.body.setVelocityY(shootDirection.y * Phaser.Math.Between(this.SHOT_VELOCITY_Y_MIN, this.SHOT_VELOCITY_Y_MAX));
         });
 
         // cup/ball collision
@@ -86,7 +90,7 @@ class Play extends Phaser.Scene {
 CODE CHALLENGE
 Try to implement at least 3/4 of the following features during the remainder of class (hint: each takes roughly 15 or fewer lines of code to implement):
 [X] Add ball reset logic on successful shot
-[ ] Improve shot logic by making pointer’s relative x-position shoot the ball in correct x-direction
+[X] Improve shot logic by making pointer’s relative x-position shoot the ball in correct x-direction
 [ ] Make one obstacle move left/right and bounce against screen edges
 [ ] Create and display shot counter, score, and successful shot percentage
 */
