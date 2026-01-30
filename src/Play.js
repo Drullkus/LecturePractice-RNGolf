@@ -65,9 +65,7 @@ class Play extends Phaser.Scene {
         });
 
         // cup/ball collision
-        this.physics.add.collider(this.ball, this.cup, (ball, _cup) => {
-            this.resetBall();
-        });
+        this.physics.add.collider(this.ball, this.cup, this.resetBall);
 
         // ball/wall collision
         this.physics.add.collider(this.ball, this.walls);
@@ -80,10 +78,10 @@ class Play extends Phaser.Scene {
 
     }
 
-    resetBall() {
-        this.ball.setX(width * 0.5);
-        this.ball.setY(height * 0.9);
-        this.ball.setVelocity(0);
+    resetBall(ball, _cup) {
+        ball.setX(width * 0.5);
+        ball.setY(height * 0.9);
+        ball.setVelocity(0);
     }
 }
 /*
