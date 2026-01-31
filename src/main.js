@@ -4,12 +4,17 @@
 
 'use strict'
 
+const urlQueryParams = new URLSearchParams(window.location.search);
+
 const config = {
     type: Phaser.AUTO,
     width: 640,
     height: 960,
     physics: {
-        default: 'arcade'
+        default: 'arcade',
+        arcade: {
+            debug: urlQueryParams.get('debug') || false
+        }
     },
     scene: [ Play ]
 }
