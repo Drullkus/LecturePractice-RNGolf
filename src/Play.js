@@ -39,7 +39,8 @@ class Play extends Phaser.Scene {
         // add walls
         const wallA = this.physics.add.sprite(0, height * 0.25, 'wall');
         wallA.setX(Phaser.Math.Between(0 + wallA.width * 0.5, width - wallA.width * 0.5));
-        wallA.body.setImmovable(true);
+        wallA.setCollideWorldBounds(true, 1);
+        wallA.setVelocityX(100).setPushable(false); // Make move sideways but never pushable
 
         const wallB = this.physics.add.sprite(0, height * 0.5, 'wall');
         wallB.setX(Phaser.Math.Between(0 + wallB.width * 0.5, width - wallB.width * 0.5));
@@ -89,6 +90,6 @@ CODE CHALLENGE
 Try to implement at least 3/4 of the following features during the remainder of class (hint: each takes roughly 15 or fewer lines of code to implement):
 [X] Add ball reset logic on successful shot
 [X] Improve shot logic by making pointer’s relative x-position shoot the ball in correct x-direction
-[ ] Make one obstacle move left/right and bounce against screen edges
+[X] Make one obstacle move left/right and bounce against screen edges
 [ ] Create and display shot counter, score, and successful shot percentage
 */
