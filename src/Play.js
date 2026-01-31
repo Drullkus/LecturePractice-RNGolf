@@ -20,6 +20,10 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+        // score
+        this.shots = 0;
+        this.holes = 0;
+
         // add background grass
         this.grass = this.add.image(0, 0, 'grass').setOrigin(0);
 
@@ -30,7 +34,7 @@ class Play extends Phaser.Scene {
         this.cup.body.setImmovable(true);
         
         // add ball
-        this.ball = this.physics.add.sprite(width * 0.5, height * 0.9, 'ball');
+        this.ball = this.physics.add.sprite(width * 0.5, height * 0.85, 'ball');
         this.ball.body.setCircle(this.ball.width * 0.5);
         this.ball.body.setCollideWorldBounds(true);
         this.ball.body.setBounce(0.5);
@@ -63,26 +67,46 @@ class Play extends Phaser.Scene {
             this.ball.body.setVelocityX(shootDirection.x * this.SHOT_VELOCITY_X);
             // Keep RNG element by still randomizing instead of deferring to precise vector maths, funny moral defect in mechanics
             this.ball.body.setVelocityY(shootDirection.y * Phaser.Math.Between(this.SHOT_VELOCITY_Y_MIN, this.SHOT_VELOCITY_Y_MAX));
+            this.shotCounterText.text = ++this.shots;
+            this.updateRatio();
         });
 
         // cup/ball collision
-        this.physics.add.collider(this.ball, this.cup, this.resetBall);
+        this.physics.add.collider(this.ball, this.cup, (ball, _cup) => {
+            ball.setX(width * 0.5);
+            ball.setY(height * 0.85);
+            ball.setVelocity(0);
+            this.holesText.text = ++this.holes;
+            this.updateRatio();
+        });
 
         // ball/wall collision
         this.physics.add.collider(this.ball, this.walls);
 
         // ball/one-way collision
         this.physics.add.collider(this.ball, this.oneWay);
+
+        // score metrics
+        const textConfig = {
+            color: '#FACADE',
+            fontSize: '42px',
+        };
+        const metricsHeight = height - 50;
+        const left = 0, center = 0.5, right = 1;
+        this.shotCounterText = this.add.text(0, metricsHeight, this.shots, textConfig).setOrigin(left, 0).setStroke(0, 3);
+        this.add.text(0, metricsHeight, "Shots", textConfig).setOrigin(left, 1).setStroke(0, 3);
+        this.holesText = this.add.text(width * 0.5, metricsHeight, this.holes, textConfig).setOrigin(center, 0).setStroke(0, 3);
+        this.add.text(width * 0.5, metricsHeight, "Holes", textConfig).setOrigin(center, 1).setStroke(0, 3);
+        this.ratioText = this.add.text(width, metricsHeight, '0%', textConfig).setOrigin(right, 0).setStroke(0, 3);
+        this.add.text(width, metricsHeight, "Ratio", textConfig).setOrigin(right, 1).setStroke(0, 3);
     }
 
     update() {
 
     }
 
-    resetBall(ball, _cup) {
-        ball.setX(width * 0.5);
-        ball.setY(height * 0.9);
-        ball.setVelocity(0);
+    updateRatio() {
+        this.ratioText.text = `${Math.round(this.holes / this.shots * 100)}%`;
     }
 }
 /*
@@ -91,5 +115,5 @@ Try to implement at least 3/4 of the following features during the remainder of 
 [X] Add ball reset logic on successful shot
 [X] Improve shot logic by making pointer’s relative x-position shoot the ball in correct x-direction
 [X] Make one obstacle move left/right and bounce against screen edges
-[ ] Create and display shot counter, score, and successful shot percentage
+[X] Create and display shot counter, score, and successful shot percentage
 */
